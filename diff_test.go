@@ -1,11 +1,10 @@
 package diff_test
 
 import (
+	"github.com/atombender/go-diff"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	diff "github.com/atombender/go-diff"
 )
 
 func TestPruneContext(t *testing.T) {
@@ -14,10 +13,10 @@ func TestPruneContext(t *testing.T) {
 		[]string{"aaa", "bbb", "XXX", "ddd", "eee", "fff"},
 	)
 	assert.Equal(t, []diff.Hunk{
-		{LineNum: 1, Operation: diff.OperationUnchanged, Line: "bbb"},
-		{LineNum: 2, Operation: diff.OperationDelete, Line: "ccc"},
-		{LineNum: 2, Operation: diff.OperationInsert, Line: "XXX"},
-		{LineNum: 3, Operation: diff.OperationUnchanged, Line: "ddd"},
+		{LineNum: 1, Operation: diff.OpUnchanged, Line: "bbb"},
+		{LineNum: 2, Operation: diff.OpDelete, Line: "ccc"},
+		{LineNum: 2, Operation: diff.OpInsert, Line: "XXX"},
+		{LineNum: 3, Operation: diff.OpUnchanged, Line: "ddd"},
 	}, diff.PruneContext(hunks, 1))
 }
 
@@ -38,9 +37,9 @@ func TestDiff(t *testing.T) {
 			a:    []string{"aaa", "bbb", "ccc"},
 			b:    []string{"aaa", "bbb", "ccc"},
 			expect: []diff.Hunk{
-				{Operation: diff.OperationUnchanged, LineNum: 0, Line: "aaa"},
-				{Operation: diff.OperationUnchanged, LineNum: 1, Line: "bbb"},
-				{Operation: diff.OperationUnchanged, LineNum: 2, Line: "ccc"},
+				{Operation: diff.OpUnchanged, LineNum: 0, Line: "aaa"},
+				{Operation: diff.OpUnchanged, LineNum: 1, Line: "bbb"},
+				{Operation: diff.OpUnchanged, LineNum: 2, Line: "ccc"},
 			},
 		},
 		{
@@ -48,9 +47,9 @@ func TestDiff(t *testing.T) {
 			a:    []string{},
 			b:    []string{"aaa", "bbb", "ccc"},
 			expect: []diff.Hunk{
-				{Operation: diff.OperationInsert, LineNum: 0, Line: "aaa"},
-				{Operation: diff.OperationInsert, LineNum: 1, Line: "bbb"},
-				{Operation: diff.OperationInsert, LineNum: 2, Line: "ccc"},
+				{Operation: diff.OpInsert, LineNum: 0, Line: "aaa"},
+				{Operation: diff.OpInsert, LineNum: 1, Line: "bbb"},
+				{Operation: diff.OpInsert, LineNum: 2, Line: "ccc"},
 			},
 		},
 		{
@@ -58,10 +57,10 @@ func TestDiff(t *testing.T) {
 			a:    []string{"aaa", "bbb", "ccc"},
 			b:    []string{"aaa", "bbb", "ZZZ", "ccc"},
 			expect: []diff.Hunk{
-				{Operation: diff.OperationUnchanged, LineNum: 0, Line: "aaa"},
-				{Operation: diff.OperationUnchanged, LineNum: 1, Line: "bbb"},
-				{Operation: diff.OperationInsert, LineNum: 2, Line: "ZZZ"},
-				{Operation: diff.OperationUnchanged, LineNum: 2, Line: "ccc"},
+				{Operation: diff.OpUnchanged, LineNum: 0, Line: "aaa"},
+				{Operation: diff.OpUnchanged, LineNum: 1, Line: "bbb"},
+				{Operation: diff.OpInsert, LineNum: 2, Line: "ZZZ"},
+				{Operation: diff.OpUnchanged, LineNum: 2, Line: "ccc"},
 			},
 		},
 		{
@@ -69,10 +68,10 @@ func TestDiff(t *testing.T) {
 			a:    []string{"aaa", "bbb", "ccc"},
 			b:    []string{"ZZZ", "aaa", "bbb", "ccc"},
 			expect: []diff.Hunk{
-				{Operation: diff.OperationInsert, LineNum: 0, Line: "ZZZ"},
-				{Operation: diff.OperationUnchanged, LineNum: 0, Line: "aaa"},
-				{Operation: diff.OperationUnchanged, LineNum: 1, Line: "bbb"},
-				{Operation: diff.OperationUnchanged, LineNum: 2, Line: "ccc"},
+				{Operation: diff.OpInsert, LineNum: 0, Line: "ZZZ"},
+				{Operation: diff.OpUnchanged, LineNum: 0, Line: "aaa"},
+				{Operation: diff.OpUnchanged, LineNum: 1, Line: "bbb"},
+				{Operation: diff.OpUnchanged, LineNum: 2, Line: "ccc"},
 			},
 		},
 		{
@@ -80,10 +79,10 @@ func TestDiff(t *testing.T) {
 			a:    []string{"aaa", "bbb", "ccc"},
 			b:    []string{"aaa", "bbb", "ccc", "ZZZ"},
 			expect: []diff.Hunk{
-				{Operation: diff.OperationUnchanged, LineNum: 0, Line: "aaa"},
-				{Operation: diff.OperationUnchanged, LineNum: 1, Line: "bbb"},
-				{Operation: diff.OperationUnchanged, LineNum: 2, Line: "ccc"},
-				{Operation: diff.OperationInsert, LineNum: 3, Line: "ZZZ"},
+				{Operation: diff.OpUnchanged, LineNum: 0, Line: "aaa"},
+				{Operation: diff.OpUnchanged, LineNum: 1, Line: "bbb"},
+				{Operation: diff.OpUnchanged, LineNum: 2, Line: "ccc"},
+				{Operation: diff.OpInsert, LineNum: 3, Line: "ZZZ"},
 			},
 		},
 		{
@@ -91,9 +90,9 @@ func TestDiff(t *testing.T) {
 			a:    []string{"aaa", "bbb", "ccc"},
 			b:    []string{},
 			expect: []diff.Hunk{
-				{Operation: diff.OperationDelete, LineNum: 0, Line: "aaa"},
-				{Operation: diff.OperationDelete, LineNum: 1, Line: "bbb"},
-				{Operation: diff.OperationDelete, LineNum: 2, Line: "ccc"},
+				{Operation: diff.OpDelete, LineNum: 0, Line: "aaa"},
+				{Operation: diff.OpDelete, LineNum: 1, Line: "bbb"},
+				{Operation: diff.OpDelete, LineNum: 2, Line: "ccc"},
 			},
 		},
 		{
@@ -101,9 +100,9 @@ func TestDiff(t *testing.T) {
 			a:    []string{"aaa", "bbb", "ccc"},
 			b:    []string{"aaa", "ccc"},
 			expect: []diff.Hunk{
-				{Operation: diff.OperationUnchanged, LineNum: 0, Line: "aaa"},
-				{Operation: diff.OperationDelete, LineNum: 1, Line: "bbb"},
-				{Operation: diff.OperationUnchanged, LineNum: 2, Line: "ccc"},
+				{Operation: diff.OpUnchanged, LineNum: 0, Line: "aaa"},
+				{Operation: diff.OpDelete, LineNum: 1, Line: "bbb"},
+				{Operation: diff.OpUnchanged, LineNum: 2, Line: "ccc"},
 			},
 		},
 		{
@@ -111,9 +110,9 @@ func TestDiff(t *testing.T) {
 			a:    []string{"aaa", "bbb", "ccc"},
 			b:    []string{"bbb", "ccc"},
 			expect: []diff.Hunk{
-				{Operation: diff.OperationDelete, LineNum: 0, Line: "aaa"},
-				{Operation: diff.OperationUnchanged, LineNum: 1, Line: "bbb"},
-				{Operation: diff.OperationUnchanged, LineNum: 2, Line: "ccc"},
+				{Operation: diff.OpDelete, LineNum: 0, Line: "aaa"},
+				{Operation: diff.OpUnchanged, LineNum: 1, Line: "bbb"},
+				{Operation: diff.OpUnchanged, LineNum: 2, Line: "ccc"},
 			},
 		},
 		{
@@ -121,9 +120,9 @@ func TestDiff(t *testing.T) {
 			a:    []string{"aaa", "bbb", "ccc"},
 			b:    []string{"aaa", "bbb"},
 			expect: []diff.Hunk{
-				{Operation: diff.OperationUnchanged, LineNum: 0, Line: "aaa"},
-				{Operation: diff.OperationUnchanged, LineNum: 1, Line: "bbb"},
-				{Operation: diff.OperationDelete, LineNum: 2, Line: "ccc"},
+				{Operation: diff.OpUnchanged, LineNum: 0, Line: "aaa"},
+				{Operation: diff.OpUnchanged, LineNum: 1, Line: "bbb"},
+				{Operation: diff.OpDelete, LineNum: 2, Line: "ccc"},
 			},
 		},
 		{
@@ -131,12 +130,12 @@ func TestDiff(t *testing.T) {
 			a:    []string{"aaa", "bbb", "ccc"},
 			b:    []string{"xxx", "yyy", "zzz"},
 			expect: []diff.Hunk{
-				{Operation: diff.OperationDelete, LineNum: 0, Line: "aaa"},
-				{Operation: diff.OperationInsert, LineNum: 0, Line: "xxx"},
-				{Operation: diff.OperationDelete, LineNum: 1, Line: "bbb"},
-				{Operation: diff.OperationInsert, LineNum: 1, Line: "yyy"},
-				{Operation: diff.OperationDelete, LineNum: 2, Line: "ccc"},
-				{Operation: diff.OperationInsert, LineNum: 2, Line: "zzz"},
+				{Operation: diff.OpDelete, LineNum: 0, Line: "aaa"},
+				{Operation: diff.OpInsert, LineNum: 0, Line: "xxx"},
+				{Operation: diff.OpDelete, LineNum: 1, Line: "bbb"},
+				{Operation: diff.OpInsert, LineNum: 1, Line: "yyy"},
+				{Operation: diff.OpDelete, LineNum: 2, Line: "ccc"},
+				{Operation: diff.OpInsert, LineNum: 2, Line: "zzz"},
 			},
 		},
 		{
@@ -144,10 +143,10 @@ func TestDiff(t *testing.T) {
 			a:    []string{"aaa", "bbb", "ccc"},
 			b:    []string{"aaa", "ZZZ", "ccc"},
 			expect: []diff.Hunk{
-				{Operation: diff.OperationUnchanged, LineNum: 0, Line: "aaa"},
-				{Operation: diff.OperationDelete, LineNum: 1, Line: "bbb"},
-				{Operation: diff.OperationInsert, LineNum: 1, Line: "ZZZ"},
-				{Operation: diff.OperationUnchanged, LineNum: 2, Line: "ccc"},
+				{Operation: diff.OpUnchanged, LineNum: 0, Line: "aaa"},
+				{Operation: diff.OpDelete, LineNum: 1, Line: "bbb"},
+				{Operation: diff.OpInsert, LineNum: 1, Line: "ZZZ"},
+				{Operation: diff.OpUnchanged, LineNum: 2, Line: "ccc"},
 			},
 		},
 		{
@@ -155,10 +154,10 @@ func TestDiff(t *testing.T) {
 			a:    []string{"aaa", "bbb", "ccc"},
 			b:    []string{"ZZZ", "bbb", "ccc"},
 			expect: []diff.Hunk{
-				{Operation: diff.OperationDelete, LineNum: 0, Line: "aaa"},
-				{Operation: diff.OperationInsert, LineNum: 0, Line: "ZZZ"},
-				{Operation: diff.OperationUnchanged, LineNum: 1, Line: "bbb"},
-				{Operation: diff.OperationUnchanged, LineNum: 2, Line: "ccc"},
+				{Operation: diff.OpDelete, LineNum: 0, Line: "aaa"},
+				{Operation: diff.OpInsert, LineNum: 0, Line: "ZZZ"},
+				{Operation: diff.OpUnchanged, LineNum: 1, Line: "bbb"},
+				{Operation: diff.OpUnchanged, LineNum: 2, Line: "ccc"},
 			},
 		},
 		{
@@ -166,10 +165,10 @@ func TestDiff(t *testing.T) {
 			a:    []string{"aaa", "bbb", "ccc"},
 			b:    []string{"aaa", "bbb", "ZZZ"},
 			expect: []diff.Hunk{
-				{Operation: diff.OperationUnchanged, LineNum: 0, Line: "aaa"},
-				{Operation: diff.OperationUnchanged, LineNum: 1, Line: "bbb"},
-				{Operation: diff.OperationDelete, LineNum: 2, Line: "ccc"},
-				{Operation: diff.OperationInsert, LineNum: 2, Line: "ZZZ"},
+				{Operation: diff.OpUnchanged, LineNum: 0, Line: "aaa"},
+				{Operation: diff.OpUnchanged, LineNum: 1, Line: "bbb"},
+				{Operation: diff.OpDelete, LineNum: 2, Line: "ccc"},
+				{Operation: diff.OpInsert, LineNum: 2, Line: "ZZZ"},
 			},
 		},
 	} {
